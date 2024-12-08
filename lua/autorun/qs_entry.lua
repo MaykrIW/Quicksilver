@@ -24,7 +24,12 @@ if SERVER then
         MsgC(QS.Config.Colors.INFO, "OK \n")
     end
 
+
+    include("quicksilver/core/qs_utils.lua")
     //Load Core Files
+    // Core File will need to be converted to a hardcoded load order
+    // to ensure that things will always work
+    --[[
     for _,f in pairs(file.Find("quicksilver/core/*.lua","LUA")) do
 		local S,ER = pcall(function() include("quicksilver/core/" .. f) end)
 		if (S) then qsTag() print("CORE: " .. f .. "") else
@@ -33,8 +38,9 @@ if SERVER then
 	end
     // Initialize the Logger
     //QS.Logger.Settings = QS.Config.Logger.Settings
-
+    ]]--
     // Load Commands
+
 
 end
 
@@ -48,6 +54,8 @@ if CLIENT then
             qsTag() print("Loaded: " .. f .. "\n")
 		end
 	end
-
-
 end
+
+
+
+qsTag() MsgC(QS.Config.Colors.INFO, "Quicksilver has full loaded! \n")

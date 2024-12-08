@@ -14,10 +14,6 @@ QS.Config = {
 
 	//EnabledPackages = {},
 }
-function qtag() 
-    MsgC(QS.Config.Colors.BRAND, "[QS]: ")
-end
-
 
 if SERVER then 
 	local data = file.Read("quicksilver/qs_config.txt","DATA")
