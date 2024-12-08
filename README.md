@@ -1,5 +1,7 @@
 Quicksilver Admin Mod
 =
+DO NOT USE THIS YET, IT IS NOWHERE NEAR READY FOR PRODUCTION NOR TESTING
+
 Designed as an alternative to another admin mod that has not received updates in quite some time. The goal is to provide a "simple" and "easily" extendable tool for sandbox servers
 
 Use SUI Scoreboard 
