@@ -21,6 +21,18 @@ From the Server console run ```qs rankSet "your name" owner```
 
 Until a GUI is made all modifications to ranks and privilages are handled through commands.
 
+
+Roadmap
+======
+- [ ] Basic Rank System
+- [ ] Rank Privilage Implementation 
+- [ ] Command System
+- [ ] Call Commands from Chat
+
+
+
+Ignore Below for now...
+
 Ranks Structure
 ======
 * Index -  The internal name used to manage ranks. This allows mutiple ranks to share the same name Title while having different permissions for example: incognito staff

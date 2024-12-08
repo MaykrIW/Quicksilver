@@ -1,6 +1,5 @@
 // Contains functions for sending messages / chats / alerts
 QS.Message = {}
-
 // Broadcast to all players
 // Text must be within a msg value
 function QS.Message.Broadcast(table)
@@ -18,4 +17,4 @@ function QS.Message.Direct(player, table)
     net.Send(player)
 end
 
-
+//
