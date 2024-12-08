@@ -56,7 +56,8 @@ function QS.Utils.ParseArguments(string)
     return parsedArguments
 end
 
-
+// Takes a table and combines all values into a single string seperated user defined value.
+// Optionally can set different starting point
 function QS.Utils.TableConcatToString(inputTable, separator, startIndex)
     if !startIndex then startIndex = 1 end
 
@@ -67,4 +68,25 @@ function QS.Utils.TableConcatToString(inputTable, separator, startIndex)
     end
 
     return concatenatedString
+end
+
+// Returns a random string of the provided length
+// types are > lower (l), upper (u), mixed (m). Defaults to Upper
+function QS.Utils.RandomChars(length, typeString)
+    local set = ""
+    local randomChars =""
+    
+    if typeString == "m" then
+        set = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+    elseif typeString == "l" then
+        set = "abcdefghijklmnopqrstuvwxyz"
+    else
+        set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    end
+    
+    for i = 1, length do
+        local c = math.random(#set)
+        randomChars = randomChars .. string.sub(set, c, c)
+    end
+    return randomChars
 end

@@ -2,7 +2,8 @@ QS = {} // Quicksilver
 QS.Version = "ALPHA v0.1"
 QS.Config = {}
 
-// Tagging func borrowed from Mercury
+// Tagging function thrown infront of anything you want to print.
+// Marks the beginning of the line with [QS]: 
 function qsTag() 
     MsgC(Color(0,168,214), "[QS]: ")
 end
@@ -27,7 +28,7 @@ if SERVER then
 
     AddCSLuaFile() // Make sure this file makes it's way to the client
 
-    //Load libraries first, as loading them after the core would break.
+    //Load libraries first, as loading them after core breaks.
     for _, libFile in pairs(file.Find("quicksilver/lib/*.lua", "LUA")) do
         local success, err = pcall(function()
             include("quicksilver/lib/" .. libFile)
