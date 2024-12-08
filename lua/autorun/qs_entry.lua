@@ -1,5 +1,5 @@
 QS = {} // Quicksilver
-QS.Version = "ALPHA v0.1"
+QS.Version = "ALPHA v0.1.0"
 QS.Config = {}
 
 

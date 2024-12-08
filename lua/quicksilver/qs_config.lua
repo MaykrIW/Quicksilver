@@ -1,7 +1,7 @@
 QS.Config = {
 	UseScoreboard = true,
 	UseTeams = true,
-	TeamOffset = 0, // ???
+	TeamOffset = 0, // Used to represent joining/disconnect/etc non standard state
 	UseRankTime = true,
 
 	Colors = {
@@ -10,8 +10,8 @@ QS.Config = {
         ERROR   = Color(155,0,0),
 		SUCCESS = Color(19,161,14),
     },
-
-	//EnabledPackages = {},
+	// Track enabled/disabled extentions
+	// EnabledPackages = {},
 }
 
 if SERVER then 
@@ -30,24 +30,6 @@ if SERVER then
 end
 
 if CLIENT then
-	// TODO: Remove?
-	// TODO: After verifying this works, try to remove the hook and call the function only
-	hook.Add("HUDPaint","QSGetConfig",function()
-		net.Start("QS:Config")
-		net.WriteString("GET_CONFIG")
-		net.WriteTable({})
-		net.SendToServer()
-		hook.Remove("HUDPaint","QSGetConfig")
-	end) 
 
-	net.Receive("QS:Config",function()
-		local cmd = net.ReadString()
-		local args = net.ReadTable()
-		if cmd=="SendConfig" then 
-			QS.Config = args
-			qsTag() print("ConfigRecieved")
-			QS.ModHook.Call("ConfigRecieved")
-		end
-	end)
 end
 

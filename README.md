@@ -1,8 +1,13 @@
 Quicksilver Admin Mod
-=
-DO NOT USE THIS YET, IT IS NOWHERE NEAR READY FOR PRODUCTION NOR TESTING
+===
 
-Designed as an alternative to another admin mod that has not received updates in quite some time. The goal is to provide a "simple" and "easily" extendable tool for sandbox servers
+DO NOT USE THIS YET, IT IS NOWHERE NEAR READY FOR PRODUCTION NOR TESTING
+======
+
+Designed as an alternative to another admin mod that has not received updates in quite some time. The goal is to provide a "simple" and "easily" extendable tool for sandbox servers.
+
+Quicksilver is compatible with mercury's data structure for Ranks/Permissions/Savedata/Time/Etc
+The only requirement is to rename the mercury data folder from ```data/mercury``` to ```data/quicksilver```
 
 Use SUI Scoreboard 
 - https://github.com/ZionDevelopers/sui-scoreboard/
@@ -26,42 +31,17 @@ Until a GUI is made all modifications to ranks and privilages are handled throug
 
 Roadmap
 ======
-- [ ] Basic Rank System
-- [ ] Rank Privilage Implementation 
-- [ ] Command System
-- [ ] Call Commands from Chat
-
-
-
-Ignore Below for now...
-
-Ranks Structure
-======
-* Index -  The internal name used to manage ranks. This allows mutiple ranks to share the same name Title while having different permissions for example: incognito staff
-* Title - The displayed name for a rank on the scoreboard.
-* Color - Displayed color if scoreboard is Installed/Enabled
-* Order - The order the rank appears relative to other ranks on the scoreboard. Lower number = higher on the board.
-
-```
-qs rankAdd Admin
-qs rankColor Admin 255,0,0 
-qs rankTitle Index "Benevolent Leader" 
-qs rankSet Maykr Admin |or| qs rankSet "Maykr" Admin
-qs rankRemove Maykr |or| qs rankRemove "Maykr"
-```
-
-Built-in Commands
-----
-```
-qs rankAdd Index // Adds a rank with the specified name
-qs rankDelete Index // Deletes the rank...
-qs rankColor Index 255,0,0 // Sets the ranks color to Red!
-qs rankTitle Index "My cool rank" 
-qs rankSet "Player Name Here" Index
-qs rankRemove "Player Name Here" // Sets the user to the "Default" rank
-```
-
-
-// Doesn't work yet
-To open the menu, type !menu in chat, you should see a window pop up.
-
+- [ ] Logger System (basic intercept of events) READ / WRITE
+- [ ] Logger auto-purge old (config days)
+1. [ ] SYSTEM
+2. [ ] PLAYER (SPAWN/DEATH/KILLS/SPRAY)
+3. [ ] BUILD (PROP SPAWN, DELETE, DESTRUCTION)
+4. [ ] EXTENSIONS
+- [ ] Nethooks / Networking
+- [ ] Ranks
+- [ ] Privilages
+- [ ] Restrictions
+- [ ] Chat command system
+- [ ] Extension Framework
+- [ ] Extension Documentation
+- [ ] Multi-Server Syncing?
