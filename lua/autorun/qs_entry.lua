@@ -7,37 +7,45 @@ include("quicksilver/qs_config.lua")
 
 
 // Tagging func borrowed from Mercury
-function qtag() 
+function qsTag() 
     MsgC(QS.Config.Colors.BRAND, "[QS]: ")
 end
 
-qtag() MsgC(QS.Config.Colors.INFO, "Starting Quicksilver... \n")
+qsTag() MsgC(QS.Config.Colors.INFO, "Starting Quicksilver... \n")
+
 
 if SERVER then
 
-    qtag() MsgC(QS.Config.Colors.INFO, "Checking for DATA folder... ")
-    if !file.Exists("quicksilver-admin-mod", "DATA") then
+    qsTag() MsgC(QS.Config.Colors.INFO, "Checking for DATA folder... ")
+    if !file.Exists("quicksilver", "DATA") then
         MsgC(QS.Config.Colors.WARN, "NONE, creating folder \n")
-        file.CreateDir("quicksilver-admin-mod")
+        file.CreateDir("quicksilver")
     else
         MsgC(QS.Config.Colors.INFO, "OK \n")
     end
 
     //Load Core Files
-    for _,f in pairs(file.Find("quicksilver-admin-mod/core/*.lua","LUA")) do
-		local S,ER = pcall(function() include("quicksilver-admin-mod/core/" .. f) end)
-		if (S) then qtag() print("Loaded: " .. f .. "\n") else
-			qtag() Msg(ER)
+    for _,f in pairs(file.Find("quicksilver/core/*.lua","LUA")) do
+		local S,ER = pcall(function() include("quicksilver/core/" .. f) end)
+		if (S) then qsTag() print("CORE: " .. f .. "") else
+			qsTag() Msg(ER)
 		end
 	end
-end // End Server
+    // Initialize the Logger
+    //QS.Logger.Settings = QS.Config.Logger.Settings
+
+    // Load Commands
+
+end
+
+
 
 if CLIENT then
 
 	for _,f in pairs(file.Find("quicksilver/client/*.lua","LUA")) do
 		local S,ER =	pcall(function() include("quicksilver/client/" .. f) end) 
-		if (S) then qtag() print("Pushed CLIENT: " .. f  .. "\n") else
-            qtag() print("Loaded: " .. f .. "\n")
+		if (S) then qsTag() print("Pushed CLIENT: " .. f  .. "\n") else
+            qsTag() print("Loaded: " .. f .. "\n")
 		end
 	end
 

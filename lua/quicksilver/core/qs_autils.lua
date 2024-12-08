@@ -1,10 +1,18 @@
 // Contains non specific util and helper functions.
 // As more functions are created they will be grouped as required
-QS.Util = {}
+QS.Utils = {}
 
+
+function QS.Utils.GetDateString() 
+    return os.date("%m-%d-%y")
+end
+
+function QS.Utils.GetTimeStamp()
+    return os.date("[%H:%M] ")
+end
 
 // String Parser takes a string and returns a table of segments.
-function QS.Util.ParseArguments(string)
+function QS.Utils.ParseArguments(string)
     local parsedArguments = {}
     local isQuoteOpen = false
     local wasQuoteJustOpened = false
@@ -28,7 +36,6 @@ function QS.Util.ParseArguments(string)
             word = string.Trim(word, [["]])
             parsedArguments[#parsedArguments + 1] = word
         end
-
         // If inside quotes, accumulate segments into one
         if isQuoteOpen then
             parsedArguments[#parsedArguments] = parsedArguments[#parsedArguments] .. " " .. word
@@ -40,7 +47,6 @@ function QS.Util.ParseArguments(string)
             end
         end
     end
-
     // Final cleanup of each argument (trim spaces and quotes)
     for index, argument in pairs(parsedArguments) do
         parsedArguments[index] = string.Trim(argument, " ")
@@ -48,4 +54,17 @@ function QS.Util.ParseArguments(string)
     end
 
     return parsedArguments
+end
+
+
+function QS.Utils.TableConcatToString(inputTable, separator, startIndex)
+    if !startIndex then startIndex = 1 end
+
+    local concatenatedString = tostring(inputTable[startIndex])
+
+    for currentIndex = startIndex + 1, #inputTable do
+        concatenatedString = concatenatedString .. separator .. tostring(inputTable[currentIndex])
+    end
+
+    return concatenatedString
 end

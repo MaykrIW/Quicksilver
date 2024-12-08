@@ -20,13 +20,13 @@ end
 
 
 if SERVER then 
-	local data = file.Read("quicksilver-admin-mod/qs_config.txt","DATA")
+	local data = file.Read("quicksilver/qs_config.txt","DATA")
 	if !data then
 		qtag() MsgC(QS.Config.Colors.INFO, "config.txt not found, creating file \n")
 		local data = util.TableToJSON(QS.Config)
-        file.Write("quicksilver-admin-mod/qs_config.txt", data)
+        file.Write("quicksilver/qs_config.txt", data)
 	else
-		qtag() MsgC(QS.Config.Colors.INFO, "Loaded Config.txt \n")
+		qtag() MsgC(QS.Config.Colors.INFO, "Loaded Config \n")
 		local data = util.JSONToTable(data)
 		for k,v in pairs(data) do
 				QS.Config[k] = v
