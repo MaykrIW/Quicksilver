@@ -2,65 +2,56 @@ QS = {} // Quicksilver
 QS.Version = "ALPHA v0.1.0"
 QS.Config = {}
 
-
-// Tagging function thrown infront of anything you want to print.
-// Marks the beginning of the line with [QS]: 
+// Standard color values
+QS.Color = {
+    INFO    = Color(255,255,255),
+    WARN    = Color(255,255,0),
+    ERROR   = Color(155,0,0),
+	SUCCESS = Color(19,161,14),
+    PRIMARY = Color(0,168,214),
+}
+// Tagging Function yoinked from Mercury
+// Used until the logger is loaded
 function qsTag() 
-    MsgC(Color(0,168,214), "[QS]: ")
+    MsgC(QS.Color.PRIMARY, "[QS]: ")
 end
 
-qsTag() MsgC(Color(0,168,214), "Starting Quicksilver... \n")
+qsTag() MsgC(QS.Color.PRIMARY, "Starting Quicksilver... \n")
 
-if SERVER then AddCSLuaFile("quicksilver/qs_config.lua") end
-include("quicksilver/qs_config.lua")
+//if SERVER then AddCSLuaFile("quicksilver/qs_config.lua") end
 
-
-qsTag() MsgC(QS.Config.Colors.INFO, "Starting [Quicksilver]\n")
-
-
+// Load library files
 if SERVER then
-    qsTag() MsgC(QS.Config.Colors.INFO, "Checking for DATA folder... ")
+    // Load / Create Data folder
+    qsTag() MsgC(QS.Color.INFO, "Checking for DATA folder... ")
     if !file.Exists("quicksilver", "DATA") then
-        MsgC(QS.Config.Colors.WARN, "NONE, creating folder \n")
-        file.CreateDir("quicksilver")
-    else
-        MsgC(QS.Config.Colors.WARN, "OK \n")
-    end
-
-    //AddCSLuaFile() // Make sure this file makes it's way to the client
-
-    //Load libraries first, as loading them after core breaks.
+            MsgC(QS.Color.WARN, "NONE, creating folder \n")
+            file.CreateDir("quicksilver")
+        else
+            MsgC(QS.Color.INFO, "OK \n")
+        end
+    // Load Config
+    include("quicksilver/qs_config.lua")
+    // Load Logger
+    include("quicksilver/qs_logger.lua")
+    // Load Librarys
     for _, libFile in pairs(file.Find("quicksilver/lib/*.lua", "LUA")) do
-        local success, err = pcall(function()
+        local success, error = pcall(function()
             include("quicksilver/lib/" .. libFile)
         end)
         if !success then
-            qsTag() Msg("[QS]: " .. err  .. "\n")
+            qsTag() Msg("[QS]: " .. error  .. "\n")
             break 
         end
         qsTag() Msg("Loaded lib/" .. libFile .. "\n")
     end
-    //Load core files
-    for _, coreFile in pairs(file.Find("quicksilver/core/*.lua", "LUA")) do
-        local success, err = pcall(function()
-            include("quicksilver/core/" .. coreFile)
-        end)
-        if !success then
-            qsTag() Msg("[QS]: " .. err  .. "\n")
-            break
-        end
-        qsTag() Msg("Loaded core/" .. coreFile  .. "\n")
-    end
-
-
-
 end
 
 
 
 if CLIENT then
 
-	for _,f in pairs(file.Find("quicksilver/client/*.lua","LUA")) do
+	--[[for _,f in pairs(file.Find("quicksilver/client/*.lua","LUA")) do
 		local S,ER =	pcall(function() include("quicksilver/client/" .. f) end) 
 		if (S) then qsTag() print("Loaded CLIENT: " .. f  .. "\n") else
             qsTag() print("Loaded: " .. f .. "\n")
@@ -75,9 +66,9 @@ if CLIENT then
     end)
  
 
-
+    ]]--
 end
 
 
 
-qsTag() MsgC(Color(75,181,67) , "Quicksilver has full loaded! \n \n \n \n \n")
+qsTag() MsgC(QS.Color.SUCCESS, "Quicksilver has full loaded! \n \n \n \n \n")
