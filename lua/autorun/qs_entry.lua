@@ -1,7 +1,9 @@
 QS = {} // Quicksilver
 QS.Version = "ALPHA v0.1.0"
 QS.Config = {}
-
+QS.ServerStartDate = os.date("%Y-%m-%d")
+QS.ServerStartTime = os.date("%H%M")
+//print(QS.ServerStartTime)
 // Standard color values
 QS.Color = {
     INFO    = Color(255,255,255),
@@ -30,8 +32,10 @@ if SERVER then
         else
             MsgC(QS.Color.INFO, "OK \n")
         end
-    // Load Config
+    // Load Config & Set server start date
     include("quicksilver/qs_config.lua")
+    
+
     // Load Logger
     include("quicksilver/qs_logger.lua")
     // Load Librarys
