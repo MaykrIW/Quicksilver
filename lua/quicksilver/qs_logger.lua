@@ -1,4 +1,15 @@
 QS.Log = {}
+--[[
+ _                     _   _              _   _     _                 
+| |                   | | | |            | | | |   (_)                
+| |     ___   __ _    | |_| |__   ___    | |_| |__  _ _ __   __ _ ___ 
+| |    / _ \ / _` |   | __| '_ \ / _ \   | __| '_ \| | '_ \ / _` / __|
+| |___| (_) | (_| |   | |_| | | |  __/   | |_| | | | | | | | (_| \__ \
+\_____/\___/ \__, |    \__|_| |_|\___|    \__|_| |_|_|_| |_|\__, |___/
+              __/ |                                          __/ |    
+             |___/                                          |___/     
+]]--
+
 
 // Even if the Logging function is disabled Quicksilver will still generate the folders.
 file.CreateDir("quicksilver/logs/system","DATA")
@@ -17,15 +28,22 @@ file.CreateDir("quicksilver/logs/extenstions","DATA")
           writeData - table passed from the QS.Log function. Same data requirements
 --------------------------------------------------------------------------]]
 local function WriteDisk(path,writeData)
-    writeData = string.format(
+    --[[writeData = string.format(
         "[QS] %s @ %s SYSTEM_LOG, C=%s, D=%s \n",
         os.date("%Y-%m-%d"), 
         os.date("%H:%M"),
         writeData.caller or "NONE",
         // I fucking hate this btw. Ternary  operator in LUA
         (type(writeData.data) == "table" and util.TableToJSON(writeData.data)) or writeData.data
-    )
-    file.Append("quicksilver/logs/".. path .."/"..QS.ServerStartDate.."-system_log.txt",writeData)    
+    )]]--
+    writeData.date=os.date("%Y-%m-%d")
+    writeData.time=os.date("%H:%M")
+
+    local wd = {date=writeData.date, time=writeData.time,caller=writeData.caller,data=writeData.data}
+
+    file.Append("quicksilver/logs/".. path .."/"..QS.ServerStartDate.."-system_log.txt",util.TableToJSON(wd)..",\n")
+    
+    //file.Append("quicksilver/logs/".. path .."/"..QS.ServerStartDate.."-system_log.txt",writeData)    
     return true
 end
 
@@ -82,8 +100,8 @@ end
                       (within the quicksilver/logs folder)
 --------------------------------------------------------------------------]]
 function QS.Log( logData )
-    if type(tlogData) != "table" then error("\n>>. Logger expected: TABLE. got " .. string.upper(type(logData)) .. "") end
-
+    if !QS.Config.Log.ENABLED then return logData end
+    if type(logData) != "table" then error("\n>>. Logger expected: TABLE. got " .. string.upper(type(logData)) .. "") end
     if !logData.data then error("\n>> Table passed to Logger did not contain data value") end
 
     if logData.type == "SYS" then
@@ -102,7 +120,7 @@ function QS.Log( logData )
         error("\n>> Table passed to Logger did not contain type and/or value [SYS, PLY, BLD, EXT]")
     end
 
-    return t
+    return logData
 end
 
 --[[------------------------------------------------------------------------
@@ -127,3 +145,6 @@ end
         caller = player or nil(server)
     }
 --------------------------------------------------------------------------]]
+
+
+QS.Log({type="SYS",data="asdfasfsadf"})
