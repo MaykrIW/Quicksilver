@@ -1,9 +1,11 @@
-QS.Ranks = {}
+QS.Ranks = {
+    RanksTable = {}
+}
 
 file.CreateDir("quicksilver/ranks","DATA")
 
 // Index is saved as the file name not in the rank
-local rankTemplate = {
+local rankTemplate = QS.Utils.ReadOnly({
     order = 0,
     color = {r=0,g=1,b=3},
     admin = false,
@@ -17,7 +19,37 @@ local rankTemplate = {
     privileges = {},
     immunity = 1,
     title = "Owner"
-}
+})
+rankTemplate.order = 1
+
+--[[
+
+function QS.Rank.Create() end
+function QS.Rank.Delete() end
+function QS.Rank.Copy() end
+
+function QS.Rank.Get() end
+function QS.Rank.Save() end
+function QS.Rank.SaveAll() end
+
+function QS.Rank.SetRestrictions() end
+function QS.Rank.GetRestrictions() end
+function QS.Rank.HasRestrictions() end
+
+function QS.Rank.GetPrivileges() end
+function QS.Rank.SetPrivileges() end
+function QS.Rank.HasPrivileges() end
+
+function QS.Rank.SetOrder() end
+function QS.Rank.SetTitle() end
+function QS.Rank.SetColor() end
+function QS.Rank.SetAdmin() end
+function QS.Rank.SetImmunity() end
+function QS.Rank.SetSuperAdmin() end
+function QS.Rank.SetTargetOnlySelf() end
+
+]]--
+
 
 
 

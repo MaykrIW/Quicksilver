@@ -113,7 +113,7 @@ end
 --------------------------------------------------------------------------]]
 function QS.Log( logData )
     //if !QS.Config.Log.ENABLED then return logData end
-    if type(logData) != "table" then error("\n>>. Logger expected: TABLE. got " .. string.upper(type(logData)) .. "") end
+    if type(logData) != "table" then error("\n>> Logger expected: TABLE. got " .. string.upper(type(logData)) .. "") end
     if !logData.data then error("\n>> Table passed to Logger did not contain data value") end
 
     if string.lower(logData.type) == "sys" then 
