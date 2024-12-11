@@ -12,11 +12,33 @@ QS.Log = {}
 
 
 // Even if the Logging function is disabled Quicksilver will still generate the folders.
-file.CreateDir("quicksilver/logs/system","DATA")
-file.CreateDir("quicksilver/logs/player","DATA")
-file.CreateDir("quicksilver/logs/build","DATA")
-file.CreateDir("quicksilver/logs/extenstions","DATA")
+local timestamp = util.TableToJSON({type="START/RESTART",data="[QS]: SERVER START/RESTART "..QS.ServerStartDate.." @ "..QS.ServerStartTime})
 
+file.CreateDir("quicksilver/logs/system","DATA")
+    file.Append("quicksilver/logs/system".."/"..QS.ServerStartDate.."-system_log.txt",timestamp.."\n")
+file.CreateDir("quicksilver/logs/player","DATA")
+    file.Append("quicksilver/logs/player".."/"..QS.ServerStartDate.."-player_log.txt",timestamp.."\n")
+file.CreateDir("quicksilver/logs/build","DATA")
+    file.Append("quicksilver/logs/build".."/"..QS.ServerStartDate.."-build_log.txt",timestamp.."\n")
+file.CreateDir("quicksilver/logs/extenstions","DATA")
+    file.Append("quicksilver/logs/extenstions".."/"..QS.ServerStartDate.."-extenstions_log.txt",timestamp.."\n")
+
+--[[------------------------------------------------------------------------
+    Types:  SYS or sys = System
+            :: Calls from core or library functions within Quicksilver
+            :: DO NOT USE IN EXTENTIONS, EXCEPT VERY RARE CIRCUMSTANCES 
+            PLY or ply = Player
+            :: All events related to player action 
+               spawn, death, kill, chat)
+            BLD or bld = Build
+            :: Prop Spawn/Destroy/Delete, Tool Gun, Etc
+            EXT or ext = Extentions
+            :: Used by extentison to log all information that does not fit PLY or BLD
+
+    Data:   Data can contain string, numbers, tables, json
+            :: When data contains a tabl
+            
+            --------------------------------------------------------------------------]]
 --[[------------------------------------------------------------------------
 	Name: WriteDisk
     
@@ -28,22 +50,11 @@ file.CreateDir("quicksilver/logs/extenstions","DATA")
           writeData - table passed from the QS.Log function. Same data requirements
 --------------------------------------------------------------------------]]
 local function WriteDisk(path,writeData)
-    --[[writeData = string.format(
-        "[QS] %s @ %s SYSTEM_LOG, C=%s, D=%s \n",
-        os.date("%Y-%m-%d"), 
-        os.date("%H:%M"),
-        writeData.caller or "NONE",
-        // I fucking hate this btw. Ternary  operator in LUA
-        (type(writeData.data) == "table" and util.TableToJSON(writeData.data)) or writeData.data
-    )]]--
     writeData.date=os.date("%Y-%m-%d")
-    writeData.time=os.date("%H:%M")
+    writeData.time=os.date("%H:%M:%S")
 
     local wd = {date=writeData.date, time=writeData.time,caller=writeData.caller,data=writeData.data}
-
     file.Append("quicksilver/logs/".. path .."/"..QS.ServerStartDate.."-system_log.txt",util.TableToJSON(wd)..",\n")
-    
-    //file.Append("quicksilver/logs/".. path .."/"..QS.ServerStartDate.."-system_log.txt",writeData)    
     return true
 end
 
@@ -59,31 +70,32 @@ local function WriteConsole(printData) // Prints to the console, Keeping the nam
 
     local typeString = ""
     local logColor = Color(0,0,0)
-    if printData.type == "SYS" then   
+    if string.lower(printData.type) == "sys" then   
         typeString = "SYSTEM_LOG"
         logColor = QS.Color.SUCCESS
-    elseif printData.type == "PLY" then
+    elseif string.lower(printData.type) == "ply" then
         typeString = "PLAYER_LOG"
         logColor = Color(0,255,187)
-    elseif printData.type == "BLD" then
+    elseif string.lower(printData.type) == "bld" then
         typeString = "BUILD_LOG"
         logColor = Color(168,168,168)
-    elseif printData.type == "EXT" then
+    elseif string.lower(printData.type) == "ext" then
         typeString = "EXT_LOG"
         logColor = Color(252,129,234)
     end
     
-    MsgC(QS.Color.PRIMARY, "[QS] ",
-         QS.Color.WARN, os.date("%Y-%m-%d "),
-         QS.Color.INFO, "@",
-         QS.Color.WARN, os.date(" %H:%M "),
-         logColor, typeString,
-         QS.Color.WARN, ", Caller",
-         QS.Color.INFO, "= ".. (printData.caller or "NONE") ..", ",
-         QS.Color.WARN,"Data",
-         QS.Color.INFO,"= ".. 
-         ((type(printData.data) == "table" and util.TableToJSON(printData.data)) or printData.data)
-         .."\n")
+    MsgC(
+        QS.Color.PRIMARY, "[QS]: ",
+        logColor, typeString,
+        QS.Color.INFO, os.date(" %Y-%m-%d"),
+        QS.Color.WARN, " @ ",
+        QS.Color.INFO, os.date("%H:%M "),
+        QS.Color.WARN, "Caller=",
+        QS.Color.INFO, (printData.caller or "NONE") ..", ",
+        QS.Color.WARN,"Data=",
+        QS.Color.INFO, 
+        ((type(printData.data) == "table" and util.TableToJSON(printData.data)) or printData.data)
+        .."\n")
 
     return true
 end
@@ -100,22 +112,26 @@ end
                       (within the quicksilver/logs folder)
 --------------------------------------------------------------------------]]
 function QS.Log( logData )
-    if !QS.Config.Log.ENABLED then return logData end
+    //if !QS.Config.Log.ENABLED then return logData end
     if type(logData) != "table" then error("\n>>. Logger expected: TABLE. got " .. string.upper(type(logData)) .. "") end
     if !logData.data then error("\n>> Table passed to Logger did not contain data value") end
 
-    if logData.type == "SYS" then
+    if string.lower(logData.type) == "sys" then 
         _ = (QS.Config.Log.SYS.console and WriteConsole(logData))
-        _ = (QS.Config.Log.SYS.disk and WriteDisk("system", logData))        
-    elseif logData.type == "PLY" then
+        _ = (QS.Config.Log.SYS.disk and WriteDisk("system", logData))   
+
+    elseif string.lower(logData.type) == "ply" then
         _ = (QS.Config.Log.PLY.console and WriteConsole(logData))
         _ = (QS.Config.Log.PLY.disk and WriteDisk("player", logData))   
-    elseif logData.type == "BLD" then
+
+    elseif string.lower(logData.type) == "bld" then
         _ = (QS.Config.Log.BLD.console and WriteConsole(logData))
-        _ = (QS.Config.Log.BLD.disk and WriteDisk("build", logData))   
-    elseif logData.type == "EXT" then
+        _ = (QS.Config.Log.BLD.disk and WriteDisk("build", logData)) 
+
+    elseif string.lower(logData.type) == "ext" then
         _ = (QS.Config.Log.EXT.console and WriteConsole(logData))
         _ = (QS.Config.Log.EXT.disk and WriteDisk("extention", logData))
+
     else
         error("\n>> Table passed to Logger did not contain type and/or value [SYS, PLY, BLD, EXT]")
     end
@@ -145,6 +161,3 @@ end
         caller = player or nil(server)
     }
 --------------------------------------------------------------------------]]
-
-
-QS.Log({type="SYS",data="asdfasfsadf"})

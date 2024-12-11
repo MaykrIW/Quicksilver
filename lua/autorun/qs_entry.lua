@@ -19,12 +19,13 @@ function qsTag()
 end
 
 qsTag() MsgC(QS.Color.PRIMARY, "Starting Quicksilver... \n")
+qsTag() MsgC(QS.Color.PRIMARY, os.date("%Y-%m-%d") .. " | Time: " .. os.date("%H:%M") .. "\n")
 
 //if SERVER then AddCSLuaFile("quicksilver/qs_config.lua") end
 
 // Load library files
 if SERVER then
-    // Load / Create Data folder
+    // Load/Create Data folder
     qsTag() MsgC(QS.Color.INFO, "Checking for DATA folder... ")
     if !file.Exists("quicksilver", "DATA") then
             MsgC(QS.Color.WARN, "NONE, creating folder \n")
@@ -32,12 +33,10 @@ if SERVER then
         else
             MsgC(QS.Color.INFO, "OK \n")
         end
-    // Load Config & Set server start date
+    // Load Config and Launch the logger
     include("quicksilver/qs_config.lua")
-    
-
-    // Load Logger
     include("quicksilver/qs_logger.lua")
+
     // Load Librarys
     for _, libFile in pairs(file.Find("quicksilver/lib/*.lua", "LUA")) do
         local success, error = pcall(function()
@@ -48,6 +47,18 @@ if SERVER then
             break 
         end
         qsTag() Msg("Loaded lib/" .. libFile .. "\n")
+    end
+
+    // Load Core
+    for _, libFile in pairs(file.Find("quicksilver/core/*.lua", "LUA")) do
+        local success, error = pcall(function()
+            include("quicksilver/core/" .. libFile)
+        end)
+        if !success then
+            qsTag() Msg("[QS]: " .. error  .. "\n")
+            break 
+        end
+        qsTag() Msg("Loaded Core/" .. libFile .. "\n")
     end
 end
 

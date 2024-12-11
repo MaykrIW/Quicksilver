@@ -1,5 +1,6 @@
 QS.Ranks = {}
 
+file.CreateDir("quicksilver/ranks","DATA")
 
 // Index is saved as the file name not in the rank
 local rankTemplate = {

@@ -5,7 +5,7 @@ QS.Config = {
 	UseRankTime = true,
 	Log  = {
 		// Disables entire logging system, ignore subsystem settings.
-		ENABLED = false, 
+		ENABLED = true, 
 		// Auto Purge removes old log files that exceed lifespan
 		AUTO_PURGE = {
 			enabled = true,
@@ -15,7 +15,7 @@ QS.Config = {
 		// Disk    = writing to the associated file on disk
 		SYS = { // System
 			console = true,
-			disk 	= true,
+			disk 	= false,
 		},
 		PLY = {	// Player
 			console = true,
