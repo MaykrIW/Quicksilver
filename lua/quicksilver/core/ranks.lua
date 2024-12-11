@@ -20,7 +20,6 @@ local rankTemplate = QS.Utils.ReadOnly({
     immunity = 1,
     title = "Owner"
 })
-rankTemplate.order = 1
 
 --[[
 

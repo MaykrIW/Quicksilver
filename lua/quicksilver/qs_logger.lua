@@ -1,15 +1,4 @@
 QS.Log = {}
---[[
- _                     _   _              _   _     _                 
-| |                   | | | |            | | | |   (_)                
-| |     ___   __ _    | |_| |__   ___    | |_| |__  _ _ __   __ _ ___ 
-| |    / _ \ / _` |   | __| '_ \ / _ \   | __| '_ \| | '_ \ / _` / __|
-| |___| (_) | (_| |   | |_| | | |  __/   | |_| | | | | | | | (_| \__ \
-\_____/\___/ \__, |    \__|_| |_|\___|    \__|_| |_|_|_| |_|\__, |___/
-              __/ |                                          __/ |    
-             |___/                                          |___/     
-]]--
-
 
 // Even if the Logging function is disabled Quicksilver will still generate the folders.
 local timestamp = util.TableToJSON({type="START/RESTART",data="[QS]: SERVER START/RESTART "..QS.ServerStartDate.." @ "..QS.ServerStartTime})
@@ -40,7 +29,7 @@ file.CreateDir("quicksilver/logs/extenstions","DATA")
             
             --------------------------------------------------------------------------]]
 --[[------------------------------------------------------------------------
-	Name: WriteDisk
+	Name: WriteDisk(table) // Local Function
     
 	Desc: Internal Command for the logging system. Writes to the associated
           log folder.
@@ -59,7 +48,7 @@ local function WriteDisk(path,writeData)
 end
 
 --[[------------------------------------------------------------------------
-	Name: WriteConsole
+	Name: WriteConsole(table) // Local Function
 
 	Desc: Internal Command for the logging system. Handles the formatting
           and colors for output to the console.
@@ -101,15 +90,14 @@ local function WriteConsole(printData) // Prints to the console, Keeping the nam
 end
 
 --[[------------------------------------------------------------------------
-	Name: QS.Log
+	Name: Log(table)
 
 	Desc: Instead of using the print/msg/msgc commands directly call QS.Log()
           takes a table with the minimum required fields of type and data.
           Return back the same table passed in, enabling inline useage of
           the function while still logging it all!
 
-    Args: t      - Where the file will be written 
-                      (within the quicksilver/logs folder)
+    Args: T - Where the file will be written (within the quicksilver/logs folder)
 --------------------------------------------------------------------------]]
 function QS.Log( logData )
     //if !QS.Config.Log.ENABLED then return logData end
@@ -138,6 +126,10 @@ function QS.Log( logData )
 
     return logData
 end
+
+// TODO: Add a QS.Broadcast
+
+// TODO:
 
 --[[------------------------------------------------------------------------
 	Name: Examples of valid table to pass QS.Log()

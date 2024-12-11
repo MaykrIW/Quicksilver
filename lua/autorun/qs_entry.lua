@@ -84,6 +84,6 @@ if CLIENT then
     ]]--
 end
 
-
+PrintTable(QS)
 
 qsTag() MsgC(QS.Color.SUCCESS, "Quicksilver has full loaded! \n \n \n \n \n")
