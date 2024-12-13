@@ -1,5 +1,13 @@
 QS.Utils = {}
 
+// Takes a Color as either a vec3/4 or a table with individual values(json) 
+// and returns the opposite type that was passed
+function Col2Col(col)
+    PrintTable(Color(0,0,0))
+end
+
+Col2Col({})
+
 --[[------------------------------------------------------------------------
 	Name: Utils.ReadOnly
 
@@ -23,10 +31,12 @@ function QS.Utils.ReadOnly (t)
 // TODO Util.Broadcast   (call log)
 
 --[[------------------------------------------------------------------------
-	Name: Utils.ParseArguments
+	Name: ParseArguments(string)
 
-	Desc: Wrap around any Table and get a read-only Table back
-          Does not modify and existing table. Only returns a new modified copy
+	Desc: Takes a string and seperates by _Spaces_ while 
+    handling extra "". Returns a table with each segment. This allows a 
+    string like > !kick "^"aasdf:"sdfdff" "cool reason" < to be possible
+                  _cmd  _player         _reason
 --------------------------------------------------------------------------]]
 function QS.Utils.ParseArguments(string)
     local parsedArguments = {}

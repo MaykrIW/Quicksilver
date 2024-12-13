@@ -1,6 +1,6 @@
-QS.Ranks = {
-    RanksTable = {}
-}
+QS.Rank = {}
+QS.RanksTable = {}
+
 
 file.CreateDir("quicksilver/ranks","DATA")
 
@@ -46,6 +46,8 @@ function QS.Rank.SetAdmin() end
 function QS.Rank.SetImmunity() end
 function QS.Rank.SetSuperAdmin() end
 function QS.Rank.SetTargetOnlySelf() end
+
+function QS.Rank.Reset() end
 
 ]]--
 

@@ -43,25 +43,26 @@ if SERVER then
             include("quicksilver/lib/" .. libFile)
         end)
         if !success then
-            qsTag() Msg("[QS]: " .. error  .. "\n")
+            qsTag() MsgC(QS.Color.ERROR,"Failed to load: lib/" .. libFile .."\n")
             break 
         end
-        qsTag() Msg("Loaded lib/" .. libFile .. "\n")
+        qsTag() Msg("Loaded: lib/" .. libFile .. "\n")
     end
 
     // Load Core
-    for _, libFile in pairs(file.Find("quicksilver/core/*.lua", "LUA")) do
+    for _, coreFile in pairs(file.Find("quicksilver/core/*.lua", "LUA")) do
         local success, error = pcall(function()
-            include("quicksilver/core/" .. libFile)
+            include("quicksilver/core/" .. coreFile)
         end)
         if !success then
-            qsTag() Msg("[QS]: " .. error  .. "\n")
+            qsTag() MsgC(QS.Color.ERROR,"Failed to load: core/" .. coreFile .."\n")
             break 
         end
-        qsTag() Msg("Loaded Core/" .. libFile .. "\n")
+        qsTag() Msg("Loaded: core/" .. coreFile .. "\n")
     end
 end
 
+// IMPORTANT // DO NOT HOT RELOAD CORE or LIB
 
 
 if CLIENT then
@@ -84,6 +85,6 @@ if CLIENT then
     ]]--
 end
 
-PrintTable(QS)
+//PrintTable(QS)
 
 qsTag() MsgC(QS.Color.SUCCESS, "Quicksilver has full loaded! \n \n \n \n \n")
