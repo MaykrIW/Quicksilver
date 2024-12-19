@@ -104,7 +104,7 @@ end
           the function while still logging it all!
 
     Args: T - Where the file will be written (within the quicksilver/logs folder)
---------------------------------------------------------------------------]]
+------------------------------------------------------------------------]]--
 function QS.Log( logData )
     //if !QS.CFG.Log.ENABLED then return logData end
     if type(logData) != "table" then error("\n>> Logger expected: TABLE. got " .. string.upper(type(logData)) .. "") end
