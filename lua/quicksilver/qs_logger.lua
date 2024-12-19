@@ -85,9 +85,9 @@ local function WriteConsole(printData) // Prints to the console, Keeping the nam
         QS.Color.INFO, os.date(" %Y-%m-%d"),
         QS.Color.WARN, " @ ",
         QS.Color.INFO, os.date("%H:%M "),
-        QS.Color.WARN, "Caller=",
-        QS.Color.INFO, (printData.caller or "None") ..", ",
-        QS.Color.WARN,"Data=",
+        //QS.Color.WARN, "Caller=",
+        //QS.Color.INFO, (printData.caller or "None") ..", ",
+        QS.Color.WARN,"// ",
         QS.Color.INFO, 
         ((type(printData.data) == "table" and util.TableToJSON(printData.data)) or printData.data)
         .."\n")
@@ -160,4 +160,4 @@ end
     }
 --------------------------------------------------------------------------]]
 
-QS.Log({type="SYS", data="Logger Loaded."})
+MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Logger loaded\n")

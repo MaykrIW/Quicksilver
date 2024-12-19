@@ -28,6 +28,7 @@ From the Server console run ```qs rankSet "your name" owner```
 
 Until a GUI is made all modifications to ranks and privilages are handled through commands.
 
+Tools: https://github.com/glua/Royal-Derma-Designer
 
 Roadmap
 ======

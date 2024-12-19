@@ -36,13 +36,17 @@ QS.CFG = {
 
 if SERVER then 
 	local conf = file.Read("quicksilver/config.txt","DATA")
-	if conf then 
+	if conf and conf != "" then 
+		MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Config found\n")
+
 		local json = util.JSONToTable(conf)
 		for k,v in pairs(json) do
 				QS.CFG[k] = v
 		end
 	else
-		print("No config")
+		MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Config not found or empty. Creating new config.txt\n")
+		conf = util.TableToJSON(QS.CFG,true)
+		file.Write("quicksilver/config.txt",conf)
 	end
 	
 end

@@ -28,11 +28,11 @@ if SERVER then
         else
             MsgC(QS.Color.INFO, "OK \n")
         end
-    // Pretty Json, Config, Logger
-    include("quicksilver/qs_prettyjson.lua")
+    // Config, Logger
     include("quicksilver/qs_config.lua")
     include("quicksilver/qs_logger.lua")
-    // Load Librarys (Don't change load order)
+
+    // Load Shared (Don't change load order)
     // include("quicksilver/lib/*filename*.lua")
 
     // Load Core (Don't change load order)
