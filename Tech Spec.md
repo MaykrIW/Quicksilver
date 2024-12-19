@@ -2,6 +2,9 @@
 Compatible with Mercury's data folder structure for quick drop-in replacement.
 </Overview>
 
+<Goals>
+</Goals>
+
 <Layout>
 qs_entry :: starts / inits Quicksilver, Handles hot reload of extensions and sending client files.
 
@@ -14,7 +17,6 @@ extensions :: quicksilver commands, user provided functionality, etc. If it's no
 qs_config.lua contains the default config required to bootstrap quicksilver. Generates qs_config.txt in data/quicksilver (make config changes here)
 
 quicksilver/ :: all core quicksilver files live in the main directory. No need to put them in a sub-directory.
-
 </Layout>
 
 

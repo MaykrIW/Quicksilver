@@ -2,6 +2,34 @@ QS.Rank = {}
 QS.RanksTable = {}
 
 
+local RankTemplate = {
+// Index is stored as the file name / key name
+// Index & Title collisions will thrown error
+    title = "", // Display name shown on scoreboards
+    order = 1, // High number = Higher on scoreboard (top to bottom) and rank list in menu
+    color = Color(100,100,100), // Default color is Gray
+    superadmin = false, // Used by CAMI, Example: Falcos Prop Protection checks this value to see if player can modify settings
+    admin = false, // Same as super admin, but different settings.
+    only_target_self = false, // Can the rank target other players with commands
+    restrictions = { // Restrict rank from Weapons, Tools, Sents(scripted entities)
+        Weaps =  {},
+        Tools = {},
+        Sents = {}
+    },
+    privileges = {}, // Commands rank has access to. Example: !goto, !tp, !rcon
+    immunity = 1, // Prevents ranks with lower immunity from targeting higher.
+}
+if !file.Exists("quicksilver/ranks","DATA") then
+    MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.ERROR,"No ranks folder found, Creating\n")
+	//MsgC(Color(255,0,0)," NO.  \n")
+	file.CreateDir("quicksilver/ranks") 
+    
+	  //MsgN(" ") mtag() 	MsgC(Color(255,255,0),"Data folder created \n")
+	else
+		 //MsgC(Color(0,255,0)," OK. \n")
+end
+
+
 --[[
 
 function QS.Rank.Create() end
@@ -123,3 +151,6 @@ Guest2 = {
     title: "guest2"
 }
 ]]--
+
+
+MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Ranks loaded\n")

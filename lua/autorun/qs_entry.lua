@@ -21,10 +21,12 @@ MsgC(QS.Color.PRIMARY, "[QS]: ", os.date("%Y-%m-%d") .. " | Time: " .. os.date("
 // Load library files
 if SERVER then
     // Load/Create Data folder
-    MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO, "Checking for DATA folder... ")
+    MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.WARN, "Checking for DATA folder... ")
     if !file.Exists("quicksilver", "DATA") then
-            MsgC(QS.Color.WARN, "NONE, creating folder \n")
+            MsgC(QS.Color.ERROR, "NONE\n")
+            MsgC(QS.Color.PRIMARY, "[QS]: ", QS.Color.WARN,"Creating new DATA folder... ")
             file.CreateDir("quicksilver")
+            MsgC(QS.Color.WARN,"OK \n")
         else
             MsgC(QS.Color.INFO, "OK \n")
         end
@@ -32,8 +34,11 @@ if SERVER then
     include("quicksilver/qs_config.lua")
     include("quicksilver/qs_logger.lua")
 
+    // Common Admin Mod Interface
+    include("quicksilver/shared/sh_cami.lua")
+
     // Load Shared (Don't change load order)
-    // include("quicksilver/lib/*filename*.lua")
+    include("quicksilver/qs_ranks.lua")
 
     // Load Core (Don't change load order)
     // include("quicksilver/*filename*.lua")
@@ -63,6 +68,5 @@ if CLIENT then
     
 end
 
-//PrintTable(QS)
 
 MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.SUCCESS, "Quicksilver has full loaded! \n \n \n \n \n")

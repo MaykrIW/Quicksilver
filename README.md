@@ -32,12 +32,12 @@ Tools: https://github.com/glua/Royal-Derma-Designer
 
 Roadmap
 ======
-- [ ] Logger System (basic intercept of events) READ / WRITE
-- [ ] Logger auto-purge old (config days)
+- [X] Logger System (basic intercept of events) READ / WRITE
 1. [ ] SYSTEM
 2. [ ] PLAYER (SPAWN/DEATH/KILLS/SPRAY)
 3. [ ] BUILD (PROP SPAWN, DELETE, DESTRUCTION)
 4. [ ] EXTENSIONS
+- [ ] Logger auto-purge old (config days)
 - [ ] Nethooks / Networking
 - [ ] Ranks
 - [ ] Privilages

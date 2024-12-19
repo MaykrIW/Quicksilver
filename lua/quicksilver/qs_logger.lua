@@ -154,10 +154,27 @@ end
         type = "PLY",
         data = {
             username = "bestGMODplayer7",
-            passcode = "superSecurePasscode321",
+            passcode = "superSecurePasscode321", // Don't send passcodes btw...
         },
         caller = player or nil(server)
     }
 --------------------------------------------------------------------------]]
 
-MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Logger loaded\n")
+local isEnabled = (QS.CFG.Log.ENABLED and "ENABLED") or "DISABLED"
+local eStat = " -> ["..
+              "CONSOLE=" ..
+              ((QS.CFG.Log.SYS.console and "SYS ") or "")..
+              ((QS.CFG.Log.PLY.console and "PLY ") or "")..
+              ((QS.CFG.Log.BLD.console and "BLD ") or "")..
+              ((QS.CFG.Log.EXT.console and "EXT ") or "")..
+              ""..
+              "| FILE=" .. 
+              ((QS.CFG.Log.SYS.disk and "SYS ") or "")..
+              ((QS.CFG.Log.PLY.disk and "PLY ") or "")..
+              ((QS.CFG.Log.BLD.disk and "BLD ") or "")..
+              ((QS.CFG.Log.EXT.disk and "EXT ") or "")..
+              "]"
+
+if !QS.CFG.Log.ENABLED then eStat = "" end
+
+MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Logger ",isEnabled,eStat,"\n")
