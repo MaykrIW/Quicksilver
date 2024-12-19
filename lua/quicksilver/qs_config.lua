@@ -1,7 +1,7 @@
 QS.CFG = {
 	UseScoreboard = true,
 	UseTeams = true,
-	TeamOffset = 0, // Used to represent joining/disconnect/etc non standard state
+	TeamOffset = 5000, // Used to represent joining/disconnect/etc non standard state
 	UseRankTime = true,
 	Log  = {
 		// Disables entire logging system, ignore subsystem settings.
@@ -33,3 +33,16 @@ QS.CFG = {
 	// Track enabled/disabled extentions
 	// EnabledExtension = {},
 }
+
+if SERVER then 
+	local conf = file.Read("quicksilver/config.txt","DATA")
+	if conf then 
+		local json = util.JSONToTable(conf)
+		for k,v in pairs(json) do
+				QS.CFG[k] = v
+		end
+	else
+		print("No config")
+	end
+	
+end

@@ -3,8 +3,7 @@ QS.Version = "ALPHA v0.2.0"
 QS.Config = {}
 QS.ServerStartDate = os.date("%Y-%m-%d")
 QS.ServerStartTime = os.date("%H%M")
-//print(QS.ServerStartTime)
-// Standard color values
+
 QS.Color = {
     INFO    = Color(255,255,255),
     WARN    = Color(255,255,0),
@@ -12,8 +11,6 @@ QS.Color = {
 	SUCCESS = Color(19,161,14),
     PRIMARY = Color(0,168,214),
 }
-// Tagging Function yoinked from Mercury
-// Used until the logger is loaded
 
 
 MsgC(QS.Color.PRIMARY, "[QS]: ", "Starting Quicksilver.... \n")
@@ -31,34 +28,17 @@ if SERVER then
         else
             MsgC(QS.Color.INFO, "OK \n")
         end
-    // Load Config and Launch the logger
-    //include("quicksilver/qs_config.lua")
-    //include("quicksilver/qs_logger.lua")
+    // Pretty Json, Config, Logger
+    include("quicksilver/qs_prettyjson.lua")
+    include("quicksilver/qs_config.lua")
+    include("quicksilver/qs_logger.lua")
+    // Load Librarys (Don't change load order)
+    // include("quicksilver/lib/*filename*.lua")
 
-    // Load Librarys
-    for _, libFile in pairs(file.Find("quicksilver/lib/*.lua", "LUA")) do
-        local success, error = pcall(function()
-            include("quicksilver/lib/" .. libFile)
-            AddCSLuaFile("quicksilver/lib/" .. libFile)
-        end)
-        if !success then
-            MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.ERROR,"Failed to load: lib/" .. libFile .."\n")
-            break 
-        end
-        MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Loaded/Sent: lib/" .. libFile .. "\n")
-    end
+    // Load Core (Don't change load order)
+    // include("quicksilver/*filename*.lua")
 
-    // Load Core
-    for _, coreFile in pairs(file.Find("quicksilver/core/*.lua", "LUA")) do
-        local success, error = pcall(function()
-            include("quicksilver/core/" .. coreFile)
-        end)
-        if !success then
-            MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.ERROR,"Failed to load: core/" .. coreFile .."\n")
-            break 
-        end
-        MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Loaded: core/" .. coreFile .. "\n")
-    end
+    
 end
 
 // IMPORTANT // DO NOT HOT RELOAD CORE or LIB
@@ -67,14 +47,13 @@ end
 if CLIENT then
 
 	for _,f in pairs(file.Find("quicksilver/client/*.lua","LUA")) do
-		local S,ER =	pcall(function() include("quicksilver/client/" .. f) end) 
+		local S,ER = pcall(function() include("quicksilver/client/" .. f) end) 
 		if (S) then qsTag() print("Loaded CLIENT: " .. f  .. "\n") else
-            qsTag() print("Loaded: " .. f .. "\n")
+            qsTag() MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO, f, "\n")
 		end
 	end
 
-
-    -- This function listens for the net message from the server
+    // This function listens for the net message from the server
     net.Receive("QS:ChatPrint", function()
         local msg = net.ReadTable()
         chat.AddText(Color(255, 0, 0), "Server: " .. msg.msg)

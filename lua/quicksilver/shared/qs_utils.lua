@@ -18,3 +18,8 @@ function QS.Utils.ReadOnly (t)
     setmetatable(proxy, mt)
     return proxy
  end
+
+concommand.Add( "killyourself", function( ply, cmd, args )
+    ply:Kill()
+    print( "You killed yourself!" )
+end )
