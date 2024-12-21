@@ -4,9 +4,10 @@ Quicksilver Admin Mod
 DO NOT USE THIS YET, IT IS NOWHERE NEAR READY FOR PRODUCTION NOR TESTING
 ======
 
-Designed as an alternative to another admin mod that has not received updates in quite some time. The goal is to provide a "simple" and "easily" extendable tool for sandbox servers.
+Designed as an "alternative" Mercury which has not public updates in quite some time. The goal is to provide a "simple" and "easily" extendable tool for sandbox servers.
 
-Quicksilver is compatible with mercury's data structure for Ranks/Permissions/Savedata/Time/Etc
+Quicksilver is 1-for-1 compatible with Mercury's data folder structure to maintain as much compatibility as possible. (except logs)
+- Ranks/Permissions/Savedata/Time/Etc
 The only requirement is to rename the mercury data folder from ```data/mercury``` to ```data/quicksilver```
 
 Use SUI Scoreboard 
@@ -28,21 +29,31 @@ From the Server console run ```qs rankSet "your name" owner```
 
 Until a GUI is made all modifications to ranks and privilages are handled through commands.
 
-Tools: https://github.com/glua/Royal-Derma-Designer
+Tools Used: 
+https://github.com/glua/Royal-Derma-Designer
 
 Roadmap
 ======
-- [X] Logger System (basic intercept of events) READ / WRITE
-1. [ ] SYSTEM
-2. [ ] PLAYER (SPAWN/DEATH/KILLS/SPRAY)
-3. [ ] BUILD (PROP SPAWN, DELETE, DESTRUCTION)
-4. [ ] EXTENSIONS
+[X] Logger System (basic intercept of events) READ / WRITE
+- [ ] SYSTEM
+- [ ] PLAYER (SPAWN/DEATH/KILLS/SPRAY)
+- [ ] BUILD (PROP SPAWN, DELETE, DESTRUCTION)
+- [ ] EXTENSIONS
 - [ ] Logger auto-purge old (config days)
-- [ ] Nethooks / Networking
-- [ ] Ranks
-- [ ] Privilages
-- [ ] Restrictions
-- [ ] Chat command system
-- [ ] Extension Framework
-- [ ] Extension Documentation
-- [ ] Multi-Server Syncing?
+- [X] Enable/Disable Subsystems
+
+[ ] Nethooks / Networking
+
+[ ] Ranks
+
+[ ] Privilages
+
+[ ] Restrictions
+
+[ ] Chat command system
+
+[ ] Extension Framework
+
+[ ] Extension Documentation
+
+[ ] Multi-Server Syncing?
