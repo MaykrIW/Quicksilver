@@ -2,24 +2,25 @@ QS.Rank = {}
 QS.RanksTable = {}
 
 
-
-// Rank system is designed to by 1 for 1 compaible with mercury's system
-// Only Create, Delete, Copy, Save, SaveAll functions write to disk. 
-// When modifying ranks make sure to call the save function when done
-
---[[ TODO:
-- Convert Create & Copy to use Save function instead of directly writing to disk.
-    keep the file exists check just to prevent collisions.
+--[[ 
+Rank system is designed to by 1 for 1 compaible with mercury's system
+Warning: 
+- Calling these functions directly is not recommended. Use the registerd commands contained within QCMD (Quicksilver Commands)
+    This will ensure permissions / restrictions / immunity is respected. QS.Ranks only implements the functions for managing
+    the commands table and saving to disk.
+- When modifying ranks make sure to call the save function when done.
+- Only Create, Delete, Copy, Save, SaveAll functions write to disk. 
 ]]--
 
+
 local RankTmpl = {
-// Index is stored as the file name / key name
-// Index & Title collisions will thrown error
+// Index is stored as the file name (key name in the table)
+// Index collisions will thrown error
     title = "", // Display name shown on scoreboards
     order = 1, // High number = Higher on scoreboard (top to bottom) and rank list in menu
     color = Color(255,245,133), // Default color is Gray
-    superadmin = false, // Used by CAMI, Example: Falcos Prop Protection checks this value to see if player can modify settings
-    admin = false, // Same as super admin, but different settings.
+    superadmin = false, // Used by CAMI, Example: Falcos Prop Protection checks this value to see if player can modify addon settings
+    admin = false, // Same as superadmin, but different settings.
     only_target_self = false, // Can the rank target other players with commands
     restrictions = { // Restrict rank from Weapons, Tools, Sents(scripted entities)
         Weaps =  {},
@@ -27,7 +28,7 @@ local RankTmpl = {
         Sents = {}
     },
     privileges = {}, // Commands rank has access to. Example: !goto, !tp, !rcon
-    immunity = 1, // Prevents ranks with lower immunity from targeting higher.
+    immunity = 1, // Prevents ranks with lower immunity from targeting higher (or modifying ranks with higher immunity maybe??).
 }
 local RankProps = { // Used to verify correct data types
 	color = "table",
@@ -63,8 +64,8 @@ GuestTmpl.privileges[1] = ""
 // Create load ranks function? or only allow updating the table not a full reload?
 
 --[[ 
-Check for Ranks Folder and required ranks [default, owner]
-Will create required ranks via templates above (don't change)
+Check for Ranks Folder / check for required ranks [default, owner]
+Will create required ranks via templates above (don't change) // Only if they are missing
 ]]--
 MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.WARN, "Checking for RANKS folder... ")
 if !file.Exists("quicksilver/ranks","DATA") then
@@ -93,13 +94,47 @@ if !file.Exists("quicksilver/ranks","DATA") then
         //PrintTable(QS.RanksTable)
 end
 
+--[[------------------------------------------------------------------------
+	Name: Rank.Save
+	Desc: Take a RANK index and saves it to disk
+    Arg1: index - the rank to be saved
+    Returns: bool, status/error message
+------------------------------------------------------------------------]]--
+function QS.Rank.Save(index)
+    if !index or index == "" then return false, "no index passed" end
+
+    index = string.lower(index)
+
+    if QS.RanksTable[index] == nil then return false, "index not in RanksTable" end
+
+    file.Write("quicksilver/ranks/"..index..".txt", util.TableToJSON(QS.RanksTable[index],true))
+
+    return true, "rank index " .. index .. " saved to disk"
+end
+//print(QS.Rank.Save("owner"))
+
+
+--[[------------------------------------------------------------------------
+	Name: Rank.SaveAll
+	Desc: Saves all ranks currently in the RanksTable to disk. (Overwrites)
+    Returns: bool
+------------------------------------------------------------------------]]--
+function QS.Rank.SaveAll() 
+    for rank, _ in pairs(QS.RanksTable) do
+        QS.Rank.Save(rank)
+    end
+    return true
+end
+//QS.Rank.SaveAll()
+
 
 --[[------------------------------------------------------------------------
 	Name: Rank.Create
 	Desc: Creates a new rank and inserts into the RanksTable. Returns a copy of new rank (saves to disk)
     Arg1: index - unique name used to represent the rank internally, not the displayed name.
     Arg2: title - display name shown on scoreboard, visible.
-    Arg3: color - ranks color. // make this not mandatory?
+    Arg3: color - ranks color. (optional argument; defaults to Color(250,255,130))
+    Returns: bool, Status/Error message or copy of the rank created
     ------------------------------------------------------------------------]]--
 function QS.Rank.Create(index, title, color) 
     if !index or index == "" then return false, "no index passed" end
@@ -108,9 +143,9 @@ function QS.Rank.Create(index, title, color)
 
     index = string.lower(index)
 
-    if file.Exists("quicksilver/ranks/"..index..".txt", "DATA") then return false, "index already exists in Ranks directory" end
     if QS.RanksTable[index] != nil then return false, "index already exists in RanksTable" end
-
+    if file.Exists("quicksilver/ranks/"..index..".txt", "DATA") then return false, "index already exists in Ranks directory" end
+    
     local rtab = table.Copy(RankTmpl)
 
     table.Merge(rtab,{
@@ -119,7 +154,7 @@ function QS.Rank.Create(index, title, color)
     },true)
     
     QS.RanksTable[index] = rtab
-    file.Append("quicksilver/ranks/"..index..".txt", util.TableToJSON(rtab,true))
+    QS.Rank.Save(index)
 
     return true, rtab
 end
@@ -130,6 +165,7 @@ end
 	Name: Rank.Delete
 	Desc: Take a RANK index and deletes it. Deleting "default" & "owner" are blocked actions (deletes from disk)
     Arg1: index - unique name used to represent the rank internally, not the displayed name.
+    Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
 function QS.Rank.Delete(index)
     if !index or index == ""  then return false, "no index passed" end
@@ -153,6 +189,7 @@ end
 	Desc: Take a RANK index and copies it to the new index (saves to disk directly)
     Arg1: index - the ranks to be copies
     Arg2: new_undex - the new index to copy the rank to.
+    Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
 function QS.Rank.Copy(index, new_index) 
     if !index or index == "" then return false, "no index passed" end
@@ -175,34 +212,15 @@ end
 //print(QS.Rank.Copy("owner","owner2"))
 
 
-
 --[[------------------------------------------------------------------------
-	Name: Rank.Save
-	Desc: Take a RANK index and saves it to disk
-    Arg1: index - the rank to be saved
+	Name: Rank.Get
+	Desc: Take a RANK index and returns the table
+    Arg1: index - the rank to be fetched
+    Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
-function QS.Rank.Save(index) 
-    if !index or index == "" then return false, "no index passed" end
-
-    index = string.lower(index)
-
-    if QS.RanksTable[index] == nil then return false, "index not in RanksTable" end
-
-    file.Write("quicksilver/ranks/"..index..".txt", util.TableToJSON(QS.RanksTable[index],true))
-
-    return true, "rank index " .. index .. " saved to disk"
+function QS.Rank.Get(index) 
+    return true, QS.RanksTable[index]
 end
-
-
---[[------------------------------------------------------------------------
-	Name: Rank.SaveAll
-	Desc: Saves all ranks currently in the RanksTable to disk. (Overwrites)
-    ------------------------------------------------------------------------]]--
-function QS.Rank.SaveAll() 
-
-end
-
-
 
 
 --[[
@@ -211,9 +229,9 @@ end
 --function QS.Rank.Delete() end
 --function QS.Rank.Copy() end
 
-function QS.Rank.Get() end
-function QS.Rank.Save() end
-function QS.Rank.SaveAll() end
+--function QS.Rank.Get() end
+--function QS.Rank.Save() end
+--function QS.Rank.SaveAll() end
 
 function QS.Rank.SetRestrictions() end
 function QS.Rank.GetRestrictions() end
