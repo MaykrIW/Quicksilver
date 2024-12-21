@@ -34,7 +34,7 @@ https://github.com/glua/Royal-Derma-Designer
 
 Roadmap
 ======
-[X] Logger System (basic intercept of events) READ / WRITE
+- [X] Logger System (basic intercept of events) READ / WRITE
 - [ ] SYSTEM
 - [ ] PLAYER (SPAWN/DEATH/KILLS/SPRAY)
 - [ ] BUILD (PROP SPAWN, DELETE, DESTRUCTION)
@@ -42,18 +42,18 @@ Roadmap
 - [ ] Logger auto-purge old (config days)
 - [X] Enable/Disable Subsystems
 
-[ ] Nethooks / Networking
+- [ ] Nethooks / Networking
 
-[ ] Ranks
+- [ ] Ranks
 
-[ ] Privilages
+- [ ] Privilages
 
-[ ] Restrictions
+- [ ] Restrictions
 
-[ ] Chat command system
+- [ ] Chat command system
 
-[ ] Extension Framework
+- [ ] Extension Framework
 
-[ ] Extension Documentation
+- [ ] Extension Documentation
 
-[ ] Multi-Server Syncing?
+- [ ] Multi-Server Syncing?
