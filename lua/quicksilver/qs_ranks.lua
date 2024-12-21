@@ -4,6 +4,14 @@ QS.RanksTable = {}
 
 
 // Rank system is designed to by 1 for 1 compaible with mercury's system
+// Only Create, Delete, Copy, Save, SaveAll functions write to disk. 
+// When modifying ranks make sure to call the save function when done
+
+--[[ TODO:
+- Convert Create & Copy to use Save function instead of directly writing to disk.
+    keep the file exists check just to prevent collisions.
+]]--
+
 local RankTmpl = {
 // Index is stored as the file name / key name
 // Index & Title collisions will thrown error
@@ -88,69 +96,84 @@ end
 
 --[[------------------------------------------------------------------------
 	Name: Rank.Create
-	Desc: Internal Command for the logging system. Handles the formatting
-          and colors for output to the console.
+	Desc: Creates a new rank and inserts into the RanksTable. Returns a copy of new rank (saves to disk)
     Arg1: index - unique name used to represent the rank internally, not the displayed name.
     Arg2: title - display name shown on scoreboard, visible.
     Arg3: color - ranks color. // make this not mandatory?
     ------------------------------------------------------------------------]]--
 function QS.Rank.Create(index, title, color) 
     if !index or index == "" then return false, "no index passed" end
-    index = string.lower(index)
     if !title or title == "" then return false, "no title passed" end
-    if !color then return false, "no color passed" end
+    if !color then color = Color(250,255,130) end
 
-    if(file.Exists("quicksilver/ranks/"..index..".txt", "DATA")) then return false, "rank with index already exists" end
+    index = string.lower(index)
+
+    if file.Exists("quicksilver/ranks/"..index..".txt", "DATA") then return false, "index already exists in Ranks directory" end
+    if QS.RanksTable[index] != nil then return false, "index already exists in RanksTable" end
 
     local rtab = table.Copy(RankTmpl)
-        table.Merge(rtab,{
-            title = title, 
-            color = color,
-        },true)
+
+    table.Merge(rtab,{
+        title = title, 
+        color = color,
+    },true)
+    
+    QS.RanksTable[index] = rtab
     file.Append("quicksilver/ranks/"..index..".txt", util.TableToJSON(rtab,true))
 
     return true, rtab
 end
-//print(QS.Rank.Create("test","testname",Color(1,1,1)))
+//print(QS.Rank.Create("test","testname"))
 
 
 --[[------------------------------------------------------------------------
 	Name: Rank.Delete
-	Desc: Take a RANK index and deletes it. Deleting "default" & "owner" are blocked actions
+	Desc: Take a RANK index and deletes it. Deleting "default" & "owner" are blocked actions (deletes from disk)
     Arg1: index - unique name used to represent the rank internally, not the displayed name.
     ------------------------------------------------------------------------]]--
 function QS.Rank.Delete(index)
     if !index or index == ""  then return false, "no index passed" end
-    index = string.lower(index)
-    if index == "owner" then return false, "unable to delete while server is running" end
-    if index == "default" then return false, "unable to delete while server is running" end
+    if index == "owner" then return false, "unable to delete owner while server is running" end
+    if index == "default" then return false, "unable to delete default while server is running" end
 
-    if(!file.Exists("quicksilver/ranks/"..index..".txt", "DATA")) then return false, "rank with index does not exist" end
+    index = string.lower(index)
+
+    if !file.Exists("quicksilver/ranks/"..index..".txt", "DATA") then return false, "index does not exist in Ranks directory" end
+
     file.Delete("quicksilver/ranks/"..index..".txt")
     QS.RanksTable[index] = nil
-    return true, "deleted " .. index
+
+    return true, "deleted rank " .. index
 end
 //print(QS.Rank.Delete("test"))
 
 
 --[[------------------------------------------------------------------------
 	Name: Rank.Copy
-	Desc: Take a RANK index and copies it to the new index
+	Desc: Take a RANK index and copies it to the new index (saves to disk directly)
     Arg1: index - the ranks to be copies
     Arg2: new_undex - the new index to copy the rank to.
     ------------------------------------------------------------------------]]--
 function QS.Rank.Copy(index, new_index) 
     if !index or index == "" then return false, "no index passed" end
-    index = string.lower(index)
     if !new_index or new_index == ""  then return false, "no new_index passed" end
+
+    index = string.lower(index)
     new_index = string.lower(new_index)
-    if(!file.Exists("quicksilver/ranks/"..index..".txt", "DATA")) then return false, "rank with index does not exist" end
-    if(file.Exists("quicksilver/ranks/"..new_index..".txt", "DATA")) then return false, "rank with new_index already exist" end
+
+    if !file.Exists("quicksilver/ranks/"..index..".txt", "DATA") then return false, "index not in Ranks directory" end
     if QS.RanksTable[index] == nil then return false, "index file found, but index not in RanksTable" end
+    
+    if file.Exists("quicksilver/ranks/"..new_index..".txt", "DATA") then return false, "new_index already exists in Ranks directory" end
+    if QS.RanksTable[new_index] != nil then return false, "new_index already in RanksTable" end
+    
     file.Append("quicksilver/ranks/"..new_index..".txt", util.TableToJSON(QS.RanksTable[index],true))
-    return true, "copied "..index.." to "..new_index
+    QS.RanksTable[new_index] = index
+
+    return true, "copied rank "..index.." to "..new_index
 end
-//print(QS.Rank.Copy("ownerasdf","owner2"))
+//print(QS.Rank.Copy("owner","owner2"))
+
 
 
 --[[------------------------------------------------------------------------
@@ -160,10 +183,25 @@ end
     ------------------------------------------------------------------------]]--
 function QS.Rank.Save(index) 
     if !index or index == "" then return false, "no index passed" end
+
     index = string.lower(index)
+
     if QS.RanksTable[index] == nil then return false, "index not in RanksTable" end
-    file.Append("quicksilver/ranks/"..index..".txt", util.TableToJSON(QS.RanksTable[index],true))
+
+    file.Write("quicksilver/ranks/"..index..".txt", util.TableToJSON(QS.RanksTable[index],true))
+
+    return true, "rank index " .. index .. " saved to disk"
 end
+
+
+--[[------------------------------------------------------------------------
+	Name: Rank.SaveAll
+	Desc: Saves all ranks currently in the RanksTable to disk. (Overwrites)
+    ------------------------------------------------------------------------]]--
+function QS.Rank.SaveAll() 
+
+end
+
 
 
 
