@@ -17,6 +17,8 @@ Warning:
 - Only Create, Delete, Copy, Save, SaveAll functions write to disk. 
 ]]--
 
+// Used to add functions to the player. Example ply:SetRank(), ply:GetPriviledge(). or ply:GetRestriction
+PLAYER_META = FindMetaTable("Player")
 
 local RankTmpl = {
 // Index is stored as the file name (key name in the table)
@@ -242,27 +244,40 @@ end
 
 
 --[[------------------------------------------------------------------------
-	Name: Rank.SetRestriction
+	Name: Rank.ModProperty
     Desc: Set a restiction on a rank
     Arg1: string :: index - the rank to be modified
-    Arg2: string :: restriction - the restriction to be applied 
+    Arg2: string :: property - the property to change on the given rank
+    Arg3: any    :: value - the value to set the property 
     Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
-function QS.Rank.SetRestriction(index, restriction) 
+function QS.Rank.ModProperty(index, property, value) 
     // Should this handle multiple commands at once or get called recursivly? For not handle individual calls
     if !index or index == "" then return false, "no index passed" end 
-    if !restriction or restriction == "" then return false, "no restriction passed" end
+    if !property or property == "" then return false, "no property passed" end
+    if value == nil then return false, "no restriction passed" end
 
     index = string.lower(index)
+    property = string.lower(property)
+    if type(value) == "string" then value = string.lower(value) end
 
-    if !QS.RanksTable[index] then return false, "index does not exist in RanksTable" end
+    if !QS.RanksTable[index] then return false, "index '"..index.."' does not exist in RanksTable" end
+    if !RankProps[property] then return false, "property '"..property.."' is not a valid rank property on "..index.." rank" end
+    if RankProps[property] != type(value) then return false, "value type '"..type(value).."' is incorrect type for "..property.." on "..index.." rank" end
 
-    //QS.RanksTable[index].
+    QS.RanksTable[index][property] = value
+    
+    QS.Rank.Save(index)
 
-    return true
+    return true, index.." rank property '"..property.."' was modified to '"..tostring(value).."'"
 end
-// "Sents" "Tools" "Weaps" "Other"
-print(QS.Rank.SetRestriction("owner","canDie"))
+print(QS.Rank.ModProperty("guest","admin", false ))
+
+
+function QS.Rank.ModRestriction() end
+
+
+function QS.Rank.ModPrivilage() end
 
 
 --[[
@@ -282,17 +297,37 @@ function QS.Rank.GetPrivileges() end
 function QS.Rank.SetPrivileges() end
 function QS.Rank.HasPrivileges() end
 
-function QS.Rank.SetOrder() end
-function QS.Rank.SetTitle() end
-function QS.Rank.SetColor() end
-function QS.Rank.SetAdmin() end
-function QS.Rank.SetImmunity() end
-function QS.Rank.SetSuperAdmin() end
-function QS.Rank.SetTargetOnlySelf() end
-
-function QS.Rank.Reset() end
-
 ]]--
+
+--[[ Mercury's functions
+function Mercury.Ranks.AddRankProperty(property, typ_e, default) end
+function Mercury.Ranks.SaveRank(index, configuration) end
+function Mercury.Ranks.CreateRank(index, title, color) end
+function Mercury.Ranks.DeleteRank(index) end
+function Mercury.Ranks.ChangeIndex(index, newindex) end
+function Mercury.Ranks.CopyRank(index, newindex) end
+function Mercury.Ranks.ModProperty(index, property, value) end
+function Mercury.Ranks.GetProperty(index, property) end
+function Mercury.Ranks.SetRank(play, rank) end
+function META:GetRank() end
+function META:HasPrivilege(x, __cyclic) end
+function META:GetImmunity() end
+function META:CanUserTarget(x) end
+function Mercury.Ranks.RefreshTeams() end
+function Mercury.Ranks.UpdateUserGroups(rank) end
+function Mercury.Ranks.SendRankUpdateToClients() end
+net.Receive("Mercury:RankData", function() end)
+function GetTemplateRank() end
+function mtag(...) end
+timer.Create("Mercury_UpdatePlayerInfo", 0.5, 0, function() end)
+hook.Add("PlayerInitialSpawn", "MARS_Rank_Initialspawn", function() end)
+timer.Create("Mercury.OverrideAdmin", 1, 0, function() end)
+function metaplayer:GetUserGroup() end
+function metaplayer:IsUserGroup(grp) end
+function metaplayer:IsAdmin() end
+function metaplayer:IsSuperAdmin() end
+]]--
+
 
 
 // RANKS FROM MERCURY
