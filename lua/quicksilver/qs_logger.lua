@@ -161,20 +161,30 @@ end
 --------------------------------------------------------------------------]]
 
 local isEnabled = (QS.CFG.Log.ENABLED and "ENABLED") or "DISABLED"
+print(QS.CFG.Log.PLY.console)
+
+
+// Create the console output during startup to display state and subsystems
+local console = ""
+    if QS.CFG.Log.SYS.console then console = console .. "SYS " end
+    if QS.CFG.Log.PLY.console then console = console .. "PLY " end
+    if QS.CFG.Log.BLD.console then console = console .. "BLD " end
+    if QS.CFG.Log.EXT.console then console = console .. "EXT " end
+local disk = ""
+    if QS.CFG.Log.SYS.disk then disk = disk .. "SYS " end
+    if QS.CFG.Log.PLY.disk then disk = disk .. "PLY " end
+    if QS.CFG.Log.BLD.disk then disk = disk .. "BLD " end
+    if QS.CFG.Log.EXT.disk then disk = disk .. "EXT " end
+
 local eStat = " -> ["..
-              "CONSOLE=" ..
-              ((QS.CFG.Log.SYS.console and "SYS ") or "")..
-              ((QS.CFG.Log.PLY.console and "PLY ") or "")..
-              ((QS.CFG.Log.BLD.console and "BLD ") or "")..
-              ((QS.CFG.Log.EXT.console and "EXT ") or "")..
-              ""..
-              "| FILE=" .. 
-              ((QS.CFG.Log.SYS.disk and "SYS ") or "")..
-              ((QS.CFG.Log.PLY.disk and "PLY ") or "")..
-              ((QS.CFG.Log.BLD.disk and "BLD ") or "")..
-              ((QS.CFG.Log.EXT.disk and "EXT ") or "")..
+              "CONSOLE=".. 
+              console..
+              "| "..
+              "FILE="..
+              disk..
               "]"
 
+// If the logger is disabled just clear out the string. Saves an if statement with 2 seperate prints (I was lazy)
 if !QS.CFG.Log.ENABLED then eStat = "" end
 
 MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.INFO,"Logger ",isEnabled,eStat,"\n")

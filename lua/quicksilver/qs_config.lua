@@ -18,15 +18,15 @@ QS.CFG = {
 			disk 	= false,
 		},
 		PLY = {	// Player
-			console = true,
+			console = false,
 			disk 	= false,
 		},
 		BLD = { // Build
-			console = true,
+			console = false,
 			disk 	= false,
 		},
 		EXT = { // Extensions
-			console = true,
+			console = false,
 			disk 	= false,
 		}
 	}
@@ -53,3 +53,5 @@ if SERVER then
 	end
 	
 end
+
+//PrintTable(QS.CFG)

@@ -2,6 +2,11 @@ QS.Rank = {}
 QS.RanksTable = {}
 
 
+--[[ Licensing Notice
+Due to the nature of maintaining compatibility with Mercury ranks (see mercury_license) some aspects of the code below is similar to Mercury's. 
+The code below was produced using example rank data generated from a server running Mercury and the "Rank template" and "Rank properties" have been borrowed from Mercury.
+]]--
+
 --[[ 
 Rank system is designed to by 1 for 1 compaible with mercury's system
 Warning: 
@@ -64,8 +69,8 @@ GuestTmpl.privileges[1] = ""
 // Create load ranks function? or only allow updating the table not a full reload?
 
 --[[ 
-Check for Ranks Folder / check for required ranks [default, owner]
-Will create required ranks via templates above (don't change) // Only if they are missing
+Check for Ranks Folder / ensure required ranks [default, owner] exist
+Will create required ranks via templates above (don't change) if missing
 ]]--
 MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.WARN, "Checking for RANKS folder... ")
 if !file.Exists("quicksilver/ranks","DATA") then
@@ -97,7 +102,7 @@ end
 --[[------------------------------------------------------------------------
 	Name: Rank.Save
 	Desc: Take a RANK index and saves it to disk
-    Arg1: index - the rank to be saved
+    Arg1: string :: index - the rank to be saved
     Returns: bool, status/error message
 ------------------------------------------------------------------------]]--
 function QS.Rank.Save(index)
@@ -131,9 +136,9 @@ end
 --[[------------------------------------------------------------------------
 	Name: Rank.Create
 	Desc: Creates a new rank and inserts into the RanksTable. Returns a copy of new rank (saves to disk)
-    Arg1: index - unique name used to represent the rank internally, not the displayed name.
-    Arg2: title - display name shown on scoreboard, visible.
-    Arg3: color - ranks color. (optional argument; defaults to Color(250,255,130))
+    Arg1: string :: index - unique name used to represent the rank internally, not the displayed name.
+    Arg2: string :: title - display name shown on scoreboard, visible.
+    Arg3: color3 :: color - ranks color. (optional argument; defaults to Color(250,255,130))
     Returns: bool, Status/Error message or copy of the rank created
     ------------------------------------------------------------------------]]--
 function QS.Rank.Create(index, title, color) 
@@ -164,7 +169,7 @@ end
 --[[------------------------------------------------------------------------
 	Name: Rank.Delete
 	Desc: Take a RANK index and deletes it. Deleting "default" & "owner" are blocked actions (deletes from disk)
-    Arg1: index - unique name used to represent the rank internally, not the displayed name.
+    Arg1: string :: index - unique name used to represent the rank internally, not the displayed name.
     Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
 function QS.Rank.Delete(index)
@@ -187,8 +192,8 @@ end
 --[[------------------------------------------------------------------------
 	Name: Rank.Copy
 	Desc: Take a RANK index and copies it to the new index (saves to disk directly)
-    Arg1: index - the ranks to be copies
-    Arg2: new_undex - the new index to copy the rank to.
+    Arg1: string :: index - the ranks to be copies
+    Arg2: string :: new_undex - the new index to copy the rank to.
     Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
 function QS.Rank.Copy(index, new_index) 
@@ -215,16 +220,52 @@ end
 --[[------------------------------------------------------------------------
 	Name: Rank.Get
 	Desc: Take a RANK index and returns the table
-    Arg1: index - the rank to be fetched
-    Returns: bool, Status/Error message
+    Arg1: string ::index - the rank to be fetched
+    Returns: bool, Status/Error or Table
     ------------------------------------------------------------------------]]--
 function QS.Rank.Get(index) 
+    if !QS.RanksTable[index] then return false, "index not in RanksTable" end
     return true, QS.RanksTable[index]
 end
+//PrintTable(select(2,QS.Rank.Get("owner")))
+
+
+--[[------------------------------------------------------------------------
+	Name: Rank.GetAll
+	Desc: Returns the entire loaded RankTable
+    Returns: bool, RanksTable
+    ------------------------------------------------------------------------]]--
+function QS.Rank.GetAll() 
+    return true, QS.RanksTable
+end
+//PrintTable(select(2,QS.Rank.GetAll()))
+
+
+--[[------------------------------------------------------------------------
+	Name: Rank.SetRestriction
+    Desc: Set a restiction on a rank
+    Arg1: string :: index - the rank to be modified
+    Arg2: string :: restriction - the restriction to be applied 
+    Returns: bool, Status/Error message
+    ------------------------------------------------------------------------]]--
+function QS.Rank.SetRestriction(index, restriction) 
+    // Should this handle multiple commands at once or get called recursivly? For not handle individual calls
+    if !index or index == "" then return false, "no index passed" end 
+    if !restriction or restriction == "" then return false, "no restriction passed" end
+
+    index = string.lower(index)
+
+    if !QS.RanksTable[index] then return false, "index does not exist in RanksTable" end
+
+    //QS.RanksTable[index].
+
+    return true
+end
+// "Sents" "Tools" "Weaps" "Other"
+print(QS.Rank.SetRestriction("owner","canDie"))
 
 
 --[[
-
 --function QS.Rank.Create() end
 --function QS.Rank.Delete() end
 --function QS.Rank.Copy() end
@@ -233,9 +274,9 @@ end
 --function QS.Rank.Save() end
 --function QS.Rank.SaveAll() end
 
-function QS.Rank.SetRestrictions() end
+-function QS.Rank.SetRestriction() end
 function QS.Rank.GetRestrictions() end
-function QS.Rank.HasRestrictions() end
+function QS.Rank.HasRestriction() end
 
 function QS.Rank.GetPrivileges() end
 function QS.Rank.SetPrivileges() end
