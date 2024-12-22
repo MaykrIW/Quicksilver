@@ -48,7 +48,7 @@ local RankProps = { // Used to verify correct data types
 	only_target_self = "boolean"
 }
 
-// Default Ranks are used if the RANKS folder doesn't exist/contain Owner or Guest ranks
+// Default Ranks are used if the RANKS folder doesn't exist/contain Owner or Default ranks
 // Default Owner rank (has *root permission which gives all access)
 local OwnerTmpl = table.Copy(RankTmpl)
 OwnerTmpl.title = "Owner"
@@ -59,39 +59,39 @@ OwnerTmpl.immunity = 10000
 OwnerTmpl.privileges[1] = "*root"
 
 // Default User rank (can't do anything)
-local GuestTmpl = table.Copy(RankTmpl)
-GuestTmpl.title = "Guest"
-GuestTmpl.superadmin = false  
-GuestTmpl.admin = false 
-GuestTmpl.only_target_self = true
-GuestTmpl.immunity = 1
-GuestTmpl.privileges[1] = ""
+local DefaultTmpl = table.Copy(RankTmpl)
+DefaultTmpl.title = "Guest"
+DefaultTmpl.superadmin = false  
+DefaultTmpl.admin = false 
+DefaultTmpl.only_target_self = true
+DefaultTmpl.immunity = 1
+DefaultTmpl.privileges[1] = ""
 
 
 // Create load ranks function? or only allow updating the table not a full reload?
 
 --[[ 
-Check for Ranks Folder / ensure required ranks [default, owner] exist
+Check for Ranks Folder / ensure required ranks [default(guest), owner] exist
 Will create required ranks via templates above (don't change) if missing
 ]]--
 MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.WARN, "Checking for RANKS folder... ")
 if !file.Exists("quicksilver/ranks","DATA") then
-    MsgC(QS.Color.ERROR, "NONE\n")
-    // Created folder
-    MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.WARN, "Creating RANKS folder and [default, owner] ranks... ") 
-	file.CreateDir("quicksilver/ranks")
-    MsgC(QS.Color.WARN, "OK \n") 
-    // Add Default Ranks [default, owner]
-    file.Append("quicksilver/ranks/owner.txt",util.TableToJSON(OwnerTmpl,true))
-    file.Append("quicksilver/ranks/guest.txt",util.TableToJSON(GuestTmpl,true))
+        MsgC(QS.Color.ERROR, "NONE\n")
+        // Created folder
+        MsgC(QS.Color.PRIMARY, "[QS]: ",QS.Color.WARN, "Creating RANKS folder and [default, owner] ranks... ") 
+        file.CreateDir("quicksilver/ranks")
+        MsgC(QS.Color.WARN, "OK \n") 
+        // Add Default Ranks [default, owner]
+        file.Append("quicksilver/ranks/owner.txt",util.TableToJSON(OwnerTmpl,true))
+        file.Append("quicksilver/ranks/default.txt",util.TableToJSON(DefaultTmpl,true))
 	else
         MsgC(QS.Color.WARN, "OK \n") 
 
         if !file.Exists("quicksilver/ranks/owner.txt", "DATA") then 
             file.Append("quicksilver/ranks/owner.txt", util.TableToJSON(OwnerTmpl,true))
         end
-        if !file.Exists("quicksilver/ranks/guest.txt", "DATA") then 
-            file.Append("quicksilver/ranks/guest.txt",util.TableToJSON(GuestTmpl,true))
+        if !file.Exists("quicksilver/ranks/default.txt", "DATA") then 
+            file.Append("quicksilver/ranks/default.txt",util.TableToJSON(DefaultTmpl,true))
         end
         
         for _, rank in pairs(file.Find("quicksilver/ranks/*.txt", "DATA")) do
@@ -226,7 +226,7 @@ end
     Returns: bool, Status/Error or Table
     ------------------------------------------------------------------------]]--
 function QS.Rank.Get(index) 
-    if !QS.RanksTable[index] then return false, "index not in RanksTable" end
+    if !QS.RanksTable[index] then return false, "index '"..index.."' not in RanksTable" end
     return true, QS.RanksTable[index]
 end
 //PrintTable(select(2,QS.Rank.Get("owner")))
@@ -245,14 +245,14 @@ end
 
 --[[------------------------------------------------------------------------
 	Name: Rank.ModProperty
-    Desc: Set a restiction on a rank
+    Desc: Set a restiction on a rank (can't remove)
     Arg1: string :: index - the rank to be modified
     Arg2: string :: property - the property to change on the given rank
     Arg3: any    :: value - the value to set the property 
     Returns: bool, Status/Error message
     ------------------------------------------------------------------------]]--
 function QS.Rank.ModProperty(index, property, value) 
-    // Should this handle multiple commands at once or get called recursivly? For not handle individual calls
+    // Should this handle multiple commands at once or get called recursivly? For now handle individual calls
     if !index or index == "" then return false, "no index passed" end 
     if !property or property == "" then return false, "no property passed" end
     if value == nil then return false, "no restriction passed" end
@@ -271,14 +271,79 @@ function QS.Rank.ModProperty(index, property, value)
 
     return true, index.." rank property '"..property.."' was modified to '"..tostring(value).."'"
 end
-print(QS.Rank.ModProperty("guest","admin", false ))
+//print(QS.Rank.ModProperty("default","admin", false ))
+
+--[[------------------------------------------------------------------------
+	Name: Rank.ModRestriction
+    Desc: Set/Modify/Remove a restiction on a rank
+    Arg1: string :: index - the rank to be modified
+    Arg2: string :: type - the type of restriction to add / remove (Weaps, Tools, Sents)
+    Arg3: id     :: type - the type of restriction to add / remove (Weaps, Tools, Sents)
+    Arg4: string :: restriction - what is the restriction?
+    Arg5: bool   :: add(true) / remove(false) 
+    Returns: bool, Status/Error message
+    ------------------------------------------------------------------------]]--
+function QS.Rank.ModRestriction(index, type_ , id, restriction, bool) 
+    // Should this handle multiple commands at once or get called recursivly? For now handle individual calls
+    if !index or index == "" then return false, "no index passed" end 
+    if !type_ or type_ == "" then return false, "no restriction type passed" end
+    if !id or type(id) != "number" then return false, "no id passed or not a number" end // TODO: Replace this once the commands system is inplace.
+    if !restriction or restriction == "" then return false, "no restriction passed" end
+
+    index = string.lower(index)
+    type_ = string.lower(type_):gsub("^%l", string.upper)
+
+    if !QS.RanksTable[index] then return false, "index '"..index.."' does not exist in RanksTabl" end
+    if !QS.RanksTable[index]["restrictions"][type_] then return false, "Restriction type '"..type_.."' does not exists. Valid types are Weaps, Tools, Sents" end
+
+    if bool then
+        QS.RanksTable[index]["restrictions"][type_][id] = restriction
+        QS.Rank.Save(index)
+        return true, index.." rank had restriction '"..type_.."' : '"..restriction.." added"
+        
+    else
+        QS.RanksTable[index]["restrictions"][type_][id] = nil
+        QS.Rank.Save(index)
+        return true, index.." rank had restriction '"..type_.."' : '"..restriction.." removed"
+    end
+
+    
+
+    //if !QS.RanksTable[index] then return false, "index '"..index.."' does not exist in RanksTable" end
+    //if !RankProps[property] then return false, "property '"..property.."' is not a valid rank property on "..index.." rank" end
+    //if RankProps[property] != type(value) then return false, "value type '"..type(value).."' is incorrect type for "..property.." on "..index.." rank" end
 
 
-function QS.Rank.ModRestriction() end
+    
+end
+//print(QS.Rank.ModRestriction("default","Weaps",1,"a", false))
+
+//PrintTable(QS.RanksTable["default"])
+
+
+
+// TODO: Function descripter
+function QS.Rank.GetRestrictions(index) 
+    if !index or index == "" then return false, "no index passed" end
+    if !QS.RanksTable[index] then return false, "index not found in RanksTable" end
+    return QS.RanksTable[index]["restrictions"]
+end
+//PrintTable(QS.Rank.GetRestrictions("default"))
+
+
 
 
 function QS.Rank.ModPrivilage() end
 
+
+--[[
+restrictions = { // Restrict rank from Weapons, Tools, Sents(scripted entities)
+        Weaps =  {},
+        Tools = {},
+        Sents = {}
+    },
+    privileges = {}
+]]--
 
 --[[
 --function QS.Rank.Create() end
@@ -351,7 +416,7 @@ Owner = {
     title = "Owner"
 }
 
-Guest2 = {
+Default2 = {
     order = 39693,
     color = Color(255,0,255,93),
     superadmin = false,
